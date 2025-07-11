@@ -1,6 +1,4 @@
-import dayjs from 'dayjs';
 import { ReactMediaRecorder } from 'react-media-recorder';
-import { useTimer } from 'react-timer-hook';
 import { FileSelectForm } from '~/components/audio/file-select-form';
 import { Button } from '~/components/ui/button';
 
@@ -11,14 +9,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home({}: Route.ComponentProps) {
-  const expiryTimestamp = dayjs().add(10, 'minute').toDate();
-
-  const { seconds, minutes, hours, isRunning, start, pause, resume, restart } = useTimer({
-    expiryTimestamp,
-    onExpire: () => console.warn('onExpire called'),
-    interval: 20,
-    autoStart: false,
-  });
   return (
     <div>
       <FileSelectForm />

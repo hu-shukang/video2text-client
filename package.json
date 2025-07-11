@@ -7,7 +7,9 @@
     "dev": "react-router dev",
     "typecheck": "react-router typegen && tsc",
     "format": "prettier . --write",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "s3:sync": "aws s3 sync build/client s3://hsk-video2text-web --delete",
+    "deploy": "npm run build && npm run s3:sync"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -28,6 +30,7 @@
     "react-router": "^7.5.3",
     "react-timer-hook": "^4.0.5",
     "tailwind-merge": "^3.3.1",
+    "uuid": "^11.1.0",
     "zod": "^4.0.2"
   },
   "devDependencies": {
