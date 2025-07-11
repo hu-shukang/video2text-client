@@ -23,6 +23,7 @@ export default defineConfig([
         {
           varsIgnorePattern: '^_',
           argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
     },

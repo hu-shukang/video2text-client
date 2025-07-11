@@ -1,4 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse } from 'react-router';
+import { Toaster } from 'sonner';
 
 import type { Route } from './+types/root';
 import './app.css';
@@ -26,6 +27,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <Toaster richColors />
         {children}
         <ScrollRestoration />
         <Scripts />
