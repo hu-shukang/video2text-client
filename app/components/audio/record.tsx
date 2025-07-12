@@ -36,6 +36,15 @@ function ResultText({ result }: ResultProps) {
     );
   }
 
+  if (result.status !== 'COMPLETED') {
+    return (
+      <div>
+        <div className="font-bold text-sm leading-6 text-gray-900 mb-2">結果：</div>
+        <div className="text-sm leading-6 text-gray-500">音声認識にエラーが発生しました。</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="font-bold text-sm leading-6 text-gray-900 mb-2">結果：</div>

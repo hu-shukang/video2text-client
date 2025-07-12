@@ -18,20 +18,19 @@ const uploadFile = async (signedUrl: string, file: File) => {
 
 const getTranscriptionResult = async (id: string) => {
   const maxRetries = 100;
-  const retryInterval = 2000;
+  const retryInterval = 3000;
 
   for (let i = 0; i < maxRetries; i++) {
     try {
       const response = await axios.get<TranscriptionResult>(`/audio/output/${id}.json`);
       return response.data;
     } catch (_error) {
-      console.log(`第 ${i + 1} 次尝试获取转录结果失败，将在 ${retryInterval / 1000} 秒后重试...`);
+      console.log(`${i + 1} 回目の取得試行に失敗し、${retryInterval / 1000} 秒ごに再度試行する...`);
       await delay(retryInterval);
     }
   }
 
-  // 如果在所有尝试之后仍然失败，则抛出错误
-  throw new Error(`在 ${maxRetries} 次尝试后，仍无法获取 ID 为 ${id} 的转录结果。`);
+  throw new Error(`全 ${maxRetries} 回目の取得試行は全部失敗しました。`);
 };
 
 export const Axios = {
