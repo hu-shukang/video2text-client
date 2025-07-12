@@ -1,31 +1,39 @@
 import { Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '~/components/ui/button';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card';
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Skeleton } from '~/components/ui/skeleton';
 import { Axios } from '~/lib/axios.util';
 import type { TranscriptionResult } from '~/models/transcript.model';
 
+/**
+ * Recordコンポーネントのプロパティ。
+ */
 type Props = {
+  /** 文字起こしジョブの一意なID。 */
   id: string;
+  /** ファイルの元の名前。 */
   fileName: string;
+  /** Blob形式の生の音声データ。 */
   blob: Blob;
+  /** 音声のMIMEタイプ。 */
   type: string;
+  /** 親コンポーネントからファイルを削除するためのコールバック関数。 */
   deleteFile: (fileName: string) => void;
 };
 
+/**
+ * ResultTextコンポーネントのプロパティ。
+ */
 type ResultProps = {
+  /** 文字起こし結果オブジェクト。まだロード中の場合はnull。 */
   result: TranscriptionResult | null;
 };
 
+/**
+ * 文字起こし結果、またはローディング/エラー状態をレンダリングするコンポーネント。
+ * @param {ResultProps} props - コンポーネントのプロパティ。
+ */
 function ResultText({ result }: ResultProps) {
   if (!result) {
     return (
@@ -57,6 +65,11 @@ function ResultText({ result }: ResultProps) {
   );
 }
 
+/**
+ * 個々の録音ファイルを表示し、そのアップロード処理と文字起こし結果の表示を担当するコンポーネント。
+ * ファイルがマウントされると、自動的にアップロードと文字起こしの処理を開始します。
+ * @param {Props} props - コンポーネントのプロパティ。
+ */
 export default function Record({ id, fileName, blob, type, deleteFile }: Props) {
   const [result, setResult] = useState<TranscriptionResult | null>(null);
   const processingRef = useRef<boolean>(false);

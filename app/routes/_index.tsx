@@ -4,18 +4,32 @@ import { v4 } from 'uuid';
 import MediaRecorder from '~/components/audio/media-recorder';
 import Record from '~/components/audio/record';
 import { Button } from '~/components/ui/button';
-import { Separator } from '~/components/ui/separator';
 
 import type { Route } from './+types/_index';
 
+/**
+ * ページのメタ情報を設定します。
+ */
 export function meta({}: Route.MetaArgs) {
-  return [{ title: 'New React Router App' }, { name: 'description', content: 'Welcome to React Router!' }];
+  return [
+    { title: '音声識別 By Amazon Transcribe' },
+    { name: 'description', content: 'Amazon Transcribeで音声から文字起こしするツールです。' },
+  ];
 }
 
+/**
+ * ホームページのメインコンポーネント。
+ * 音声ファイルの選択、録音、および文字起こし対象のファイル一覧を管理・表示します。
+ * @param props - Remixから渡されるコンポーネントのプロパティ。
+ */
 export default function Home({}: Route.ComponentProps) {
   const [files, setFiles] = useState<Array<File>>([]);
   const fileSelecterRef = useRef<HTMLInputElement>(null);
 
+  /**
+   * ファイル選択ダイアログでファイルが選択されたときに呼び出されます。
+   * 重複するファイルを除外して、ファイルリストを更新します。
+   */
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const fs = e.target.files;
@@ -31,6 +45,10 @@ export default function Home({}: Route.ComponentProps) {
     [files, setFiles],
   );
 
+  /**
+   * 指定されたファイル名のファイルをリストから削除します。
+   * @param fileName - 削除するファイルの名前。
+   */
   const deleteFile = useCallback(
     (fileName: string) => {
       setFiles((files) => files.filter((file) => file.name !== fileName));
@@ -38,6 +56,10 @@ export default function Home({}: Route.ComponentProps) {
     [setFiles],
   );
 
+  /**
+   * 主にマイク録音コンポーネントから新しいファイルをリストに追加します。
+   * @param file - 追加するファイル。
+   */
   const pushFile = useCallback(
     (file: File) => {
       setFiles((files) => [...files, file]);

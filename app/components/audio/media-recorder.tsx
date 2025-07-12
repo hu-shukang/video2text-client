@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { type JSX, useCallback, useState } from 'react';
 import { ReactMediaRecorder, type StatusMessages } from 'react-media-recorder';
 import { v4 } from 'uuid';
 
@@ -12,11 +12,23 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+/**
+ * MediaRecorderコンポーネントのプロパティ。
+ */
 type Props = {
+  /**
+   * 録音されたファイルが送信されたときに呼び出されるコールバック関数。
+   * @param file - 録音された音声ファイル。
+   */
   onSubmit: (file: File) => void;
 };
 
-function RecordStatus({ status }: { status: StatusMessages }) {
+/**
+ * 録音ステータスを表示するコンポーネント。
+ * @param {StatusMessages} status - 現在の録音ステータス。
+ * @returns {JSX.Element | null} ステータスに応じたテキスト要素。
+ */
+function RecordStatus({ status }: { status: StatusMessages }): JSX.Element | null {
   if (status === 'idle') {
     return <div className="text-gray-500 text-sm">録音を開始してください。</div>;
   }
@@ -32,9 +44,19 @@ function RecordStatus({ status }: { status: StatusMessages }) {
   return null;
 }
 
+/**
+ * マイクからの音声録音機能を提供するダイアログコンポーネント。
+ * ユーザーは録音を開始、一時停止、再開、停止できます。
+ * 録音完了後、音声をプレビューし、アップロードすることができます。
+ * @param {Props} props - コンポーネントのプロパティ。
+ */
 export default function MediaRecorder({ onSubmit }: Props) {
   const [open, setOpen] = useState(false);
 
+  /**
+   * 録音された音声データを処理し、Fileオブジェクトとして送信します。
+   * @param {string} blobUrl - `react-media-recorder`から提供される録音データのBlob URL。
+   */
   const submitHandler = useCallback(
     async (blobUrl: string) => {
       const response = await fetch(blobUrl);
@@ -43,7 +65,6 @@ export default function MediaRecorder({ onSubmit }: Props) {
       const type = blob.type;
       const fileName = `録音_${id}.${type.split('/').pop()}`;
       const file = new File([blob], fileName, { type: type });
-      console.log('file', file);
       onSubmit(file);
       setOpen(false);
     },
