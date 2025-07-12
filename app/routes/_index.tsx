@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import MediaRecorder from '~/components/audio/media-recorder';
 import Record from '~/components/audio/record';
 import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
 
 import type { Route } from './+types/_index';
 
@@ -25,6 +26,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Home({}: Route.ComponentProps) {
   const [files, setFiles] = useState<Array<File>>([]);
   const fileSelecterRef = useRef<HTMLInputElement>(null);
+  const [keyword, setKeyword] = useState<string>('');
 
   /**
    * ファイル選択ダイアログでファイルが選択されたときに呼び出されます。
@@ -90,13 +92,26 @@ export default function Home({}: Route.ComponentProps) {
             </div>
           </div>
 
+          <div className="flex gap-3 items-center">
+            <Input
+              type="text"
+              placeholder="キーワード検索"
+              className="w-[262px]"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+            <div className="inline-block text-xs text-gray-500 pl-2">
+              キーワードを入力して、文字起こしの結果からヒットします。
+            </div>
+          </div>
+
           {files.map((file) => {
             const id = v4();
             const fileName = file.name;
             const type = file.type;
             return (
               <div key={fileName}>
-                <Record id={id} fileName={fileName} blob={file} type={type} deleteFile={deleteFile} />
+                <Record id={id} fileName={fileName} blob={file} type={type} deleteFile={deleteFile} keyword={keyword} />
               </div>
             );
           })}

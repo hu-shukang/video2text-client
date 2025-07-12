@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Skeleton } from '~/components/ui/skeleton';
@@ -20,6 +20,8 @@ type Props = {
   type: string;
   /** 親コンポーネントからファイルを削除するためのコールバック関数。 */
   deleteFile: (fileName: string) => void;
+  /** 検索キーワード */
+  keyword: string;
 };
 
 /**
@@ -28,13 +30,57 @@ type Props = {
 type ResultProps = {
   /** 文字起こし結果オブジェクト。まだロード中の場合はnull。 */
   result: TranscriptionResult | null;
+  /** 検索キーワード */
+  keyword: string;
 };
+
+type TextProps = {
+  /** 検索キーワード */
+  keyword: string;
+  /** テキスト */
+  text: string;
+};
+
+/**
+ * 文字起こしテキストをレンダリングするコンポーネント。
+ * @param {TextProps} props - コンポーネントのプロパティ。
+ */
+function TranscriptText({ text, keyword }: TextProps) {
+  const partList = useMemo(() => {
+    const pattern = new RegExp(keyword, 'gi');
+    const matches = text.matchAll(pattern);
+
+    const result: Array<JSX.Element> = [];
+    if (matches === null) {
+      result.push(<span>{text}</span>);
+      return result;
+    }
+    const matchArray = Array.from(matches);
+    let beforeIndex = 0;
+    for (let i = 0; i < matchArray.length; i++) {
+      const match = matchArray[i];
+      const start = match.index;
+      const end = match.index + match[0].length;
+      const before = text.slice(beforeIndex, start);
+      beforeIndex = end;
+      const keyword = match[0];
+      result.push(<span>{before}</span>);
+      result.push(<span className="bg-red-600 text-white">{keyword}</span>);
+    }
+    if (beforeIndex < text.length) {
+      result.push(<span>{text.slice(beforeIndex)}</span>);
+    }
+    return result;
+  }, [keyword, text]);
+
+  return <div className="text-sm leading-6 text-gray-500">{partList}</div>;
+}
 
 /**
  * 文字起こし結果、またはローディング/エラー状態をレンダリングするコンポーネント。
  * @param {ResultProps} props - コンポーネントのプロパティ。
  */
-function ResultText({ result }: ResultProps) {
+function ResultText({ result, keyword }: ResultProps): JSX.Element {
   if (!result) {
     return (
       <div className="space-y-2">
@@ -57,9 +103,7 @@ function ResultText({ result }: ResultProps) {
     <div>
       <div className="font-bold text-sm leading-6 text-gray-900 mb-2">結果：</div>
       {result.results.transcripts.map((t, idx) => (
-        <div key={idx} className="text-sm leading-6 text-gray-500">
-          <div>{t.transcript}</div>
-        </div>
+        <TranscriptText key={idx} keyword={keyword} text={t.transcript} />
       ))}
     </div>
   );
@@ -70,7 +114,7 @@ function ResultText({ result }: ResultProps) {
  * ファイルがマウントされると、自動的にアップロードと文字起こしの処理を開始します。
  * @param {Props} props - コンポーネントのプロパティ。
  */
-export default function Record({ id, fileName, blob, type, deleteFile }: Props) {
+export default function Record({ id, fileName, blob, type, deleteFile, keyword }: Props) {
   const [result, setResult] = useState<TranscriptionResult | null>(null);
   const processingRef = useRef<boolean>(false);
 
@@ -100,7 +144,7 @@ export default function Record({ id, fileName, blob, type, deleteFile }: Props) 
         </CardAction>
       </CardHeader>
       <CardContent>
-        <ResultText result={result} />
+        <ResultText result={result} keyword={keyword} />
       </CardContent>
     </Card>
   );
