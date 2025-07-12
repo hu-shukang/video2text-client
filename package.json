@@ -8,8 +8,10 @@
     "typecheck": "react-router typegen && tsc",
     "format": "prettier . --write",
     "lint": "eslint . --fix",
-    "s3:sync": "aws s3 sync build/client s3://hsk-video2text-web --delete",
-    "deploy": "npm run build && npm run s3:sync"
+    "s3:sync": "dotenv -e env/.env -- bash -c 'aws s3 sync build/client s3://$WEB_BUCKET_NAME --delete'",
+    "deploy": "npm run build && npm run s3:sync",
+    "s3:sync:it": "dotenv -e env/.env.it -- bash -c 'aws s3 sync build/client s3://$WEB_BUCKET_NAME --delete'",
+    "deploy:it": "npm run build && npm run s3:sync:it"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -44,6 +46,8 @@
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "dotenv": "^17.2.0",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
